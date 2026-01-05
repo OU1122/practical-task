@@ -60,25 +60,27 @@ const BookSearch = () => {
 			} else {
 				setSearchTerm("");
 			}
-		}, 300);
+		}, 200);
 
 		return () => {
 			clearTimeout(handler);
 		};
 	}, [input]);
 
-	const { data: books = [], currentData } = useGetSearchResultsQuery(
-		searchTerm,
-		{
-			skip: searchTerm.length < 3,
-		}
-	);
+	const {
+		data: books = [],
+		isFetching,
+		isLoading,
+	} = useGetSearchResultsQuery(searchTerm, {
+		skip: searchTerm.length < 3,
+	});
 
 	const shortenedResults = useMemo(() => books.slice(0, 10), [books]);
+
+	const isAnyLoading = isFetching || isLoading;
 	const shouldShowResults =
-		input.length >= 3 &&
-		currentData !== undefined &&
-		shortenedResults.length > 0;
+		input.length >= 3 && !isAnyLoading && shortenedResults.length > 0;
+
 	return (
 		<>
 			<SearchWrapper>
@@ -86,7 +88,16 @@ const BookSearch = () => {
 					input={input}
 					setInput={setInput}
 				/>
-
+				{isAnyLoading && (
+					<ResultsContainer>
+						<ResultsContent>
+							<SearchResults
+								isAnyLoading={isAnyLoading}
+								books={shortenedResults}
+							/>
+						</ResultsContent>
+					</ResultsContainer>
+				)}
 				{shouldShowResults && (
 					<ResultsContainer>
 						<ResultsContent>

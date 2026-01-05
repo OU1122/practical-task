@@ -4,6 +4,7 @@ import SearchResultItem from "../SearchResultItem";
 
 interface SearchResultsProps {
 	books: Book[];
+	isAnyLoading?: boolean;
 }
 
 const UnorderedList = styled.ul`
@@ -16,7 +17,24 @@ const UnorderedList = styled.ul`
 	padding-inline-start: 0;
 `;
 
-export const SearchResults = ({ books }: SearchResultsProps) => {
+export const SearchResults = ({
+	books,
+	isAnyLoading = false,
+}: SearchResultsProps) => {
+	if (isAnyLoading) {
+		return (
+			<UnorderedList>
+				{Array.from({ length: 5 }).map((_, i) => (
+					<SearchResultItem
+						key={i}
+						book={undefined}
+						isAnyLoading={isAnyLoading}
+					/>
+				))}
+			</UnorderedList>
+		);
+	}
+
 	return (
 		<UnorderedList>
 			{books.map((book, i) => (

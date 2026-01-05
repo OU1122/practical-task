@@ -2,7 +2,8 @@ import styled from "styled-components";
 import type { Book } from "../../features/books/book";
 
 interface SearchResultItem {
-	book: Book;
+	book?: Book;
+	isAnyLoading?: boolean;
 }
 
 const ListItem = styled.li`
@@ -51,8 +52,37 @@ const ItemLink = styled.a`
 	text-decoration: none;
 	color: inherit;
 `;
+const TextSkeleton = styled.p`
+	height: 20px;
+	width: 326px;
+	margin: 8px 0px;
+	background: #c4c4c4;
+`;
 
-export const SearchResultItem = ({ book }: SearchResultItem) => {
+const BookDetailsSkeleton = styled.div`
+	display: flex;
+	flex-direction: column;
+	padding: 20px 8px;
+`;
+
+const ImageSkeleton = styled.div`
+	height: 72px;
+	width: 50px;
+	background: #f6f6f6ff;
+`;
+export const SearchResultItem = ({ book, isAnyLoading }: SearchResultItem) => {
+	if (isAnyLoading)
+		return (
+			<ListItem>
+				<ImageSkeleton />
+
+				<BookDetailsSkeleton>
+					<TextSkeleton />
+					<TextSkeleton />
+				</BookDetailsSkeleton>
+			</ListItem>
+		);
+	if (!book) return null;
 	return (
 		<ItemLink href={`https://www.amazon.com/s?k=${book.title}`}>
 			<ListItem>
