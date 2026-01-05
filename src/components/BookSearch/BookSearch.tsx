@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import SearchBar from "../SearchBar";
 import SearchResults from "../SearchResults";
 import { useGetSearchResultsQuery } from "../../features/books/booksApi";
@@ -48,8 +48,25 @@ const ResultsContent = styled.div`
 `;
 
 const BookSearch = () => {
+	const wrapperRef = useRef<HTMLDivElement>(null);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [input, setInput] = useState("");
+	const [isOpen, setIsOpen] = useState(false);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				wrapperRef.current &&
+				!wrapperRef.current.contains(event.target as Node)
+			) {
+				setIsOpen(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () =>
+			document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
 
 	//Debouncing here to avoid calling the server on every key stroke
 	//Also checking for input length as the API requires min. 3 characters
@@ -57,6 +74,7 @@ const BookSearch = () => {
 		const handler = setTimeout(() => {
 			if (input.length >= 3) {
 				setSearchTerm(input);
+				setIsOpen(true);
 			} else {
 				setSearchTerm("");
 			}
@@ -75,15 +93,18 @@ const BookSearch = () => {
 		skip: searchTerm.length < 3,
 	});
 
-	const shortenedResults = useMemo(() => books.slice(0, 10), [books]);
+	const shortenedResults = useMemo(() => books.slice(0, 20), [books]);
 
 	const isAnyLoading = isFetching || isLoading;
 	const shouldShowResults =
-		input.length >= 3 && !isAnyLoading && shortenedResults.length > 0;
+		input.length >= 3 &&
+		!isAnyLoading &&
+		shortenedResults.length > 0 &&
+		isOpen;
 
 	return (
 		<>
-			<SearchWrapper>
+			<SearchWrapper ref={wrapperRef}>
 				<SearchBar
 					input={input}
 					setInput={setInput}

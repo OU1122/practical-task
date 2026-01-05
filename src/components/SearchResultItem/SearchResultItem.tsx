@@ -75,7 +75,6 @@ export const SearchResultItem = ({ book, isAnyLoading }: SearchResultItem) => {
 		return (
 			<ListItem>
 				<ImageSkeleton />
-
 				<BookDetailsSkeleton>
 					<TextSkeleton />
 					<TextSkeleton />
