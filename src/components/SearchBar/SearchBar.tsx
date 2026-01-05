@@ -26,12 +26,16 @@ const Input = styled.input`
 
 export const SearchBar = ({ input, setInput }: SearchBarProps) => {
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		e.preventDefault();
 		const value = e.target.value;
 		setInput(value);
 	};
+
+	 const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+    };
+	
 	return (
-		<Form>
+		<Form onSubmit={handleSubmit}>
 			<Input
 				name="search"
 				placeholder="Quick search..."
